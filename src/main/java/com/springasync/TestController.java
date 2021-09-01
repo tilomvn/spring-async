@@ -1,35 +1,43 @@
 package com.springasync;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 
-@RestController
-@RequestMapping("/api")
-public class TestController {
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-    @GetMapping("/test")
-    @Async("threadPoolTaskExecutorMe")
-    public CompletableFuture<ResponseModel> testAsyncWithResponse() {
-        return CompletableFuture.completedFuture(new ResponseModel("body"));
+
+@SpringBootTest
+@AutoConfigureMockMvc
+public class TestControllerTests {
+
+    @Autowired
+    MockMvc mockMvc;
+
+    ObjectMapper objectMapper = new ObjectMapper();
+
+    @Test
+    void testResponse() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(get("/api/test"))
+                .andExpect(request().asyncStarted())
+                .andExpect(status().isOk()).andReturn();
+        com.springasync.TestController.ResponseModel response = (com.springasync.TestController.ResponseModel)mvcResult.getAsyncResult();
+        assertEquals("body", response.value);
     }
 
-    @GetMapping("/test1")
-    @Async("threadPoolTaskExecutorMe")
-    public Future<String> testAsyncNonResponse() {
-        return new AsyncResult<String>("value");
-    }
+    @Test
+    void testNonResponse() throws Exception {
+        MvcResult resultActions = mockMvc.perform(get("/api/test1")).andReturn();
 
-    class ResponseModel {
-        String value;
-
-        ResponseModel(String value) { this.value = value; }
-
-        public String getValue() { return value; }
+        String response = (String)resultActions.getResponse().getContentAsString();
+        assertEquals("{\"cancelled\":false,\"done\":true}", response);
     }
 }
