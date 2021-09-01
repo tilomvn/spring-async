@@ -39,7 +39,7 @@ public class SpringAsyncConfig implements AsyncConfigurer {
     }
 
     @Bean
-    Executor threadPoolTaskExecutor() {
+    Executor threadPoolTaskExecutorMe() {
         return getAsyncExecutor();
     }
 }
