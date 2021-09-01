@@ -9,19 +9,30 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
 @RestController
 @RequestMapping("/api")
 public class TestController {
 
     @GetMapping("/test")
     @Async("threadPoolTaskExecutor")
-    public CompletableFuture<String> testAsyncWithResponse() {
-        return CompletableFuture.completedFuture("value");
+    public CompletableFuture<ResponseModel> testAsyncWithResponse() {
+        return CompletableFuture.completedFuture(new ResponseModel("body"));
     }
 
     @GetMapping("/test1")
     @Async("threadPoolTaskExecutor")
     public Future<String> testAsyncNonResponse() {
         return new AsyncResult<String>("value");
+    }
+
+    class ResponseModel {
+        String value;
+
+        ResponseModel(String value) {
+            this.value = value;
+        }
+
+        public String getValue() { return value; }
     }
 }
