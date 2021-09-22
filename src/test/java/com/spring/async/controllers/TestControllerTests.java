@@ -1,4 +1,4 @@
-package com.springasync;
+package com.spring.async.controllers;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
 @SpringBootTest
 @AutoConfigureMockMvc
 public class TestControllerTests {
@@ -29,15 +28,15 @@ public class TestControllerTests {
         MvcResult mvcResult = mockMvc.perform(get("/api/test"))
                 .andExpect(request().asyncStarted())
                 .andExpect(status().isOk()).andReturn();
-        com.springasync.TestController.ResponseModel response = (com.springasync.TestController.ResponseModel)mvcResult.getAsyncResult();
+        TestController.ResponseModel response = (TestController.ResponseModel)mvcResult.getAsyncResult();
         assertEquals("body", response.value);
     }
-
+    
     @Test
     void testNonResponse() throws Exception {
         MvcResult resultActions = mockMvc.perform(get("/api/test1")).andReturn();
 
         String response = (String)resultActions.getResponse().getContentAsString();
-        assertEquals("{\"cancelled\":false,\"done\":true}", response);
+        assertEquals("{\"done\":true,\"cancelled\":false}", response);
     }
 }

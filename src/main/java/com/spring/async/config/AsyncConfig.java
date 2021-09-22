@@ -1,4 +1,4 @@
-package com.springasync;
+package com.spring.async.config;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.Executor;
@@ -15,7 +15,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 @Configuration
 @EnableAsync
-public class SpringAsyncConfig implements AsyncConfigurer {
+public class AsyncConfig implements AsyncConfigurer {
 
     Logger log = LoggerFactory.getLogger(this.getClass());
     
